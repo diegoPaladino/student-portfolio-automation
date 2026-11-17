@@ -1,0 +1,113 @@
+[
+  {
+    "id": 1,
+    "title": "PALAVRAS QUE GANHAM VIDA",
+    "minimum": 2,
+    "requirements": [
+      "Criança realizando uma atividade de leitura/escrita.",
+      "Uma produção da criança ou momento de leitura."
+    ]
+  },
+  {
+    "id": 2,
+    "title": "QUANDO A IMAGINAÇÃO ENTRA EM CENA",
+    "minimum": 2,
+    "requirements": [
+      "criança caracterizada ou ensaiando.",
+      "criança na apresentação."
+    ]
+  },
+  {
+    "id": 3,
+    "title": "ERA UMA VEZ... MUITAS DESCOBERTAS",
+    "minimum": 2,
+    "requirements": [
+      "criança ouvindo história.",
+      "criança participando/recontando."
+    ]
+  },
+  {
+    "id": 4,
+    "title": "MÃOS NA TERRA, CORAÇÃO NA NATUREZA",
+    "minimum": 2,
+    "requirements": [
+      "criança plantando.",
+      "criança cuidando/observando."
+    ]
+  },
+  {
+    "id": 5,
+    "title": "UM JARDIM PARA SENTIR",
+    "minimum": 2,
+    "requirements": [
+      "criança explorando.",
+      "interação com algum elemento."
+    ]
+  },
+  {
+    "id": 6,
+    "title": "CADA GOTA CONTA",
+    "minimum": 2,
+    "requirements": [
+      "criança observando/coletando.",
+      "utilização da água."
+    ]
+  },
+  {
+    "id": 7,
+    "title": "MINHA AGENDA, MINHA RESPONSABILIDADE",
+    "minimum": 2,
+    "requirements": [
+      "preenchendo agenda.",
+      "conferindo/organizando."
+    ]
+  },
+  {
+    "id": 8,
+    "title": "SEMENTES QUE VIAJAM EM FAMÍLIA",
+    "minimum": 2,
+    "requirements": [
+      "criança com a sacola/livro.",
+      "registro no caderno."
+    ]
+  },
+  {
+    "id": 9,
+    "title": "SABORES QUE FAZEM BEM",
+    "minimum": 2,
+    "requirements": [
+      "criança participando da preparação.",
+      "criança experimentando/resultado."
+    ]
+  },
+  {
+    "id": 10,
+    "title": "MÃOS QUE CRIAM, IDEIAS QUE TRANSFORMAM",
+    "minimum": 2,
+    "requirements": [
+      "criança durante a produção.",
+      "trabalho concluído."
+    ]
+  },
+  {
+    "id": 11,
+    "title": "ESSE É O MEU JEITO DE APRENDER",
+    "minimum": 4,
+    "requirements": [
+      "Fotos espontâneas da criança, não necessariamente vinculadas a projetos específicos.",
+      "Fotos espontâneas da criança, não necessariamente vinculadas a projetos específicos.",
+      "Fotos espontâneas da criança, não necessariamente vinculadas a projetos específicos.",
+      "Fotos espontâneas da criança, não necessariamente vinculadas a projetos específicos.",
+      "Fotos espontâneas da criança, não necessariamente vinculadas a projetos específicos.",
+      "Fotos espontâneas da criança, não necessariamente vinculadas a projetos específicos."
+    ]
+  },
+  {
+    "id": 12,
+    "title": "QUE BOM TER VOCÊ CONOSCO!",
+    "minimum": 1,
+    "requirements": [
+      "Uma foto individual bem bonita da criança ocupando boa parte da página."
+    ]
+  }
+]
