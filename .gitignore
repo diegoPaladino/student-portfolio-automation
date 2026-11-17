@@ -85,3 +85,9 @@ backups/
 *.csv
 *.zip
 *.7z
+
+# Operational logs and diagnostic artifacts (including rotated files).
+logs/
+*.jsonl
+*.log.*
+!/AGENTS.md

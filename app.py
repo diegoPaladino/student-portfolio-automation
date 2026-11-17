@@ -1,14 +1,25 @@
-﻿import sqlite3
+import sqlite3
 import streamlit as st
 import pandas as pd
-from src import core, settings
+from src import core, settings, observability as obs
+import logging
+import sys
 
 st.set_page_config(page_title='Portfólios da turma · 2026',page_icon='🌱',layout='wide')
-core.initialize()
+try:
+    obs.startup()
+    core.initialize()
+except (sqlite3.Error, OSError, ValueError):
+    st.error('Não foi possível iniciar os dados ou os registros locais. Consulte o diagnóstico técnico.')
+    st.stop()
 st.title('🌱 Portfólios da turma · 2026')
 st.caption('Organize as memórias de cada criança. Somente fotos aprovadas contam para a conclusão.')
 page=st.sidebar.radio('Navegação',['Visão geral','Alunos','Aluno em detalhe','Importar e classificar','Revisar evidências','Relatório de pendências'])
-students=core.rows('SELECT * FROM students ORDER BY name')
+try:
+    students=core.rows('SELECT * FROM students ORDER BY name')
+except (sqlite3.Error,OSError):
+    st.error('Não foi possível consultar o banco local. Tente novamente ou consulte o diagnóstico.')
+    st.stop()
 by_id={s['id']:s for s in students}
 def choose_student(key):
     return st.selectbox('Criança',list(by_id),format_func=lambda i:by_id[i]['name'],key=key) if students else None
@@ -102,8 +113,21 @@ try:
     else:
         data=core.detail()
         show_table([{'Criança':r['aluno'],'Projeto':r['projeto'],'Campo':r['requisito'],'Requisito':r['descricao'],'Situação':r['estado']} for r in data if r['obrigatoria'] and r['estado']!='Aprovada'])
-        st.download_button('Baixar relatório Excel (dados pessoais: mantenha em local protegido)',core.report(),file_name='pendencias_portfolios.xlsx',mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        if st.button('Gerar relatório Excel atualizado'):
+            st.session_state['report_bytes']=core.report()
+        if 'report_bytes' in st.session_state:
+            st.download_button('Baixar relatório Excel (dados pessoais: mantenha em local protegido)',st.session_state['report_bytes'],file_name='pendencias_portfolios.xlsx',mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 except sqlite3.IntegrityError:
+    obs.emit('operation_failed','ui',logging.ERROR,sys.exc_info())
     st.error('Cadastro ou associação duplicada ou inválida. Desvincule a foto anterior para substituí-la; matrículas devem ser únicas.')
-except (ValueError,OSError) as exc:
-    st.error(str(exc) if isinstance(exc,ValueError) else 'Não foi possível acessar o arquivo ou pasta. Confira o caminho e as permissões.')
+except sqlite3.Error:
+    obs.emit('database_failed','ui',logging.ERROR,sys.exc_info())
+    st.error('Não foi possível acessar o banco local. Tente novamente ou consulte o diagnóstico.')
+except (ValueError,OSError):
+    obs.emit('operation_failed','ui',logging.ERROR,sys.exc_info())
+    st.error('Não foi possível concluir. Confira os dados, o formato da imagem e as permissões da pasta.')
+except Exception:
+    # Fronteira final: registra exceções inesperadas e interrompe a ação com mensagem segura.
+    # Sinais de controle do Streamlit derivam de BaseException e não são capturados.
+    obs.emit('operation_failed','ui',logging.ERROR,sys.exc_info())
+    st.error('Ocorreu uma falha inesperada. Consulte o diagnóstico técnico antes de tentar novamente.')
