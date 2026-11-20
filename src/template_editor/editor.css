@@ -3,3 +3,4 @@ button,select,input,textarea {font:inherit;padding:8px;border:1px solid #a7b5c2;
 button {cursor:pointer} button:hover{background:#e7f3f0}p{font:14px system-ui;color:#3a4c60}
 .viewport{height:590px;overflow:auto;border:1px solid #9daebf;background:#e9eef2;border-radius:8px;max-width:100%;margin:12px 0}
 svg{display:block;max-width:none;background:#fff}.panel label{display:flex;flex-direction:column;gap:4px}.panel input[type=number]{width:130px}.panel textarea{width:280px;height:90px}
+.project-bar label,.text-catalog label{display:flex;flex-direction:column;gap:4px}.text-catalog{display:flex;flex-direction:column;gap:10px;padding:14px;margin:12px 0;border:1px solid #a7b5c2;border-radius:8px;background:#f4f8f7;color:#243442;font:14px system-ui}.text-catalog select{width:100%;max-width:100%}.text-catalog textarea{height:100px;resize:vertical}.text-catalog button{align-self:flex-start}button:disabled{opacity:.55;cursor:default}

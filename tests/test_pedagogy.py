@@ -83,6 +83,29 @@ def test_fill_preserves_custom_text_and_reports_no_room(local):
     assert filled==draft and messages
 
 
+def test_change_project_maps_bindings_and_preserves_draft(local):
+    draft=template(local)
+    draft['regions']+= [dict(id='call',type='subtitle',x=.1,y=.4,width=.8,height=.1,
+        source={'kind':'pedagogical','field_id':'P04.individual_call'},
+        sources_by_type={'highlight':{'kind':'pedagogical','field_id':'P04.individual_call'}}),
+        dict(id='custom',type='body_text',x=.1,y=.6,width=.8,height=.1,
+        source={'kind':'literal','text':'TEXTO SINTETICO PERSONALIZADO'})]
+    original=copy.deepcopy(draft)
+    changed=model.change_project(draft,5)
+    assert draft==original and changed['project_id']==5
+    assert changed['regions'][0]['source']['requirement_id']=='05-1'
+    assert changed['regions'][1]['source']['field_id']=='P05.individual_call'
+    assert changed['regions'][1]['sources_by_type']['highlight']['field_id']=='P05.individual_call'
+    assert changed['regions'][2]==original['regions'][2]
+    assert all({k:r[k] for k in ('id','type','x','y','width','height')}==
+        {k:s[k] for k in ('id','type','x','y','width','height')} for r,s in zip(changed['regions'],original['regions']))
+    draft['regions'][1]['source']['field_id']='P04.caption_1'
+    before=copy.deepcopy(draft)
+    with pytest.raises(ValueError): model.change_project(draft,7)
+    assert draft==before
+    with pytest.raises(ValueError): model.change_project(draft,0)
+
+
 def test_catalog_import_reload_never_overwrites_edits(local):
     path=pedagogy.source_path();before=path.read_bytes()
     catalog=pedagogy.import_catalog()

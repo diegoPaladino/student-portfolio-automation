@@ -86,15 +86,33 @@ def show():
     effective_fields=[]
     for key,field in fields.items():
         text,level=pedagogy.resolve_text(key,sid,catalog)
-        effective_fields.append(dict(id=key,type=field['type'],text=text,level=level))
+        effective_fields.append(dict(id=key,type=field['type'],text=text,level=level,
+            label=pedagogy.field_label(key),group=pedagogy.field_group(key)))
     section=catalog['sections'][pedagogy.section_for(template['project_id'],catalog)]
     if section.get('missing'):
         st.info('Campos ausentes no original (não serão inventados): '+', '.join(section['missing']))
     result=_component(data=dict(token=st.session_state.editor_token,regions=template['regions'],
+        project_id=template['project_id'],projects=[dict(id=k,label=f'Projeto {k} — {v}' if 1<=k<=10 else v) for k,v in project_map.items()],
         image=_background_uri(template),width=template['background']['width'],height=template['background']['height'],
         types=list(model.TYPES),requirements=requirements,fields=effective_fields,
         fonts=typography.families(),presets={kind:typography.preset(kind) for kind in model.TYPES}),key='visual_'+st.session_state.editor_token,
-        on_save_change=lambda:None,on_preview_change=lambda:None,on_fill_change=lambda:None)
+        on_save_change=lambda:None,on_preview_change=lambda:None,on_fill_change=lambda:None,on_project_change=lambda:None)
+    project_change=result.get('project')
+    if project_change:
+        draft=copy.deepcopy(template)
+        draft['regions']=project_change['regions']
+        draft['name']=new_name.strip()
+        try:
+            draft=model.change_project(draft,project_change['project_id'])
+        except ValueError:
+            # Mensagens locais fixas do modelo; nunca texto de arquivo ou servico externo.
+            st.warning('Não foi possível trocar o projeto. Ele precisa ter os mesmos campos de texto e requisitos fotográficos usados nas regiões atuais. Ajuste as regiões ou crie outro template.')
+        else:
+            st.session_state.editor_template=draft
+            st.session_state.editor_token=uuid.uuid4().hex
+            st.session_state.pop('editor_preview',None)
+            st.session_state.editor_flash='Projeto alterado no rascunho. Confira os vínculos e salve o template.'
+            st.rerun()
     fill=result.get('fill')
     if fill:
         draft=copy.deepcopy(template)
@@ -133,7 +151,7 @@ def show():
             for message in messages: st.warning(message)
     with st.expander('Textos pedagógicos — original, edição global e personalização',expanded=True):
         st.caption('Prioridade: personalização individual > edição global > original. Alterações globais preservam as personalizações. Sublinhados são substituídos pelo primeiro nome apenas na prévia do aluno.')
-        field_id=st.selectbox('Campo pedagógico para editar',list(fields),key='pedagogy_field_'+st.session_state.editor_token)
+        field_id=st.selectbox('Campo pedagógico para editar',list(fields),format_func=lambda key:pedagogy.field_label(key)+' · '+key,key='pedagogy_field_'+st.session_state.editor_token)
         if field_id:
             field=fields[field_id]
             st.text_area('Texto original da professora',field['text'],disabled=True,key='original_'+field_id)

@@ -113,6 +113,34 @@ def test_semantic_p04_create_style_save_restart_reopen(tmp_path,semantic_server)
         page.get_by_text('Textos vinculados no rascunho. Confira a prévia e clique em Salvar template.',exact=True).wait_for(timeout=20000)
         playwright.expect(svg.locator('rect[data-id]')).to_have_count(6)
         assert json.loads(saved[0].read_text(encoding='utf-8'))==original
+        # A chamada deve estar acessivel diretamente mesmo em regiao de outro tipo.
+        assert page.get_by_label('Projeto desta tela',exact=True).input_value()=='4'
+        groups=page.get_by_label('Texto do projeto',exact=True).locator('optgroup').evaluate_all('(items)=>items.map(e=>e.label)')
+        assert groups==['Apresentação do projeto','Chamada e destaques','Legendas das fotos']
+        page.get_by_label('Região para receber o texto',exact=True).select_option(original['regions'][0]['id'])
+        page.get_by_label('Tipo',exact=True).select_option('subtitle')
+        page.get_by_label('Texto do projeto',exact=True).select_option('P04.individual_call')
+        playwright.expect(page.get_by_label('Prévia do texto do projeto',exact=True)).to_have_value('🌟 A VEZ DE ______')
+        page.get_by_role('button',name='Aplicar texto à região selecionada',exact=True).click()
+        assert page.get_by_label('Campo pedagógico',exact=True).input_value()=='P04.individual_call'
+        assert page.get_by_label('Fonte (referência 1080 px)',exact=True).input_value()=='48'
+        page.get_by_role('button',name='Salvar template',exact=True).click()
+        page.get_by_text('Template salvo — versão 2.',exact=True).wait_for(timeout=20000)
+        bound=json.loads(saved[0].read_text(encoding='utf-8'))
+        assert bound['regions'][0]['source']['field_id']=='P04.individual_call'
+        assert bound['regions'][0]['type']=='subtitle'
+        page.get_by_label('Projeto desta tela',exact=True).select_option('5')
+        page.get_by_role('button',name='Aplicar projeto',exact=True).click()
+        page.get_by_text('Projeto alterado no rascunho. Confira os vínculos e salve o template.',exact=True).wait_for(timeout=20000)
+        options=page.get_by_label('Texto do projeto',exact=True).locator('option').evaluate_all('(items)=>items.map(e=>e.value)')
+        assert options and all(value.startswith('P05.') for value in options)
+        assert json.loads(saved[0].read_text(encoding='utf-8'))==bound
+        page.get_by_role('button',name='Salvar template',exact=True).click()
+        page.get_by_text('Template salvo — versão 3.',exact=True).wait_for(timeout=20000)
+        changed=json.loads(saved[0].read_text(encoding='utf-8'))
+        assert changed['project_id']==5 and len(changed['regions'])==6
+        assert changed['regions'][0]['source']['field_id']=='P05.individual_call'
+        assert changed['regions'][2]['source']['requirement_id']=='05-1'
         page.screenshot(path=str(tmp_path/'semantic-reopened.png'))
         import shutil
         shutil.copy2(tmp_path/'semantic-reopened.png',Path(__file__).resolve().parents[1]/'outputs/editor-semantico-sintetico.png')

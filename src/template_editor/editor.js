@@ -8,6 +8,37 @@ export default function(component) {
  }
  root.replaceChildren();
  const el=(tag,text,parent=root)=>{const e=document.createElement(tag);if(text)e.textContent=text;parent.append(e);return e;};
+ const projectBar=el('div');projectBar.className='toolbar project-bar';
+ const projectLabel=el('label','Projeto desta tela',projectBar);
+ const projectSelect=el('select',null,projectLabel);projectSelect.setAttribute('aria-label','Projeto desta tela');
+ data.projects.forEach(p=>el('option',p.label,projectSelect).value=p.id);projectSelect.value=String(data.project_id);
+ const projectButton=el('button','Aplicar projeto',projectBar);projectButton.type='button';
+ projectButton.onclick=()=>setTriggerValue('project',{project_id:Number(projectSelect.value),regions:state.regions});
+ el('p','Ao aplicar outro projeto, os vínculos equivalentes acompanham a troca. Confira os textos e salve o template.');
+ const catalog=el('div');catalog.className='text-catalog';
+ el('strong','Textos disponíveis neste projeto',catalog);
+ function fieldOptions(select){
+  const groups=new Map();
+  data.fields.forEach(f=>{if(!groups.has(f.group)){const group=el('optgroup',null,select);group.label=f.group;groups.set(f.group,group);}
+   el('option',`${f.label} · ${f.text.replace(/\s+/g,' ').slice(0,85)} · ${f.id}`,groups.get(f.group)).value=f.id;});
+ }
+ const regionLabel=el('label','Região para receber o texto',catalog);
+ const catalogRegion=el('select',null,regionLabel);catalogRegion.setAttribute('aria-label','Região para receber o texto');
+ catalogRegion.onchange=()=>{state.selected=catalogRegion.value;paint();properties();};
+ const contentLabel=el('label','Texto do projeto',catalog);
+ const catalogField=el('select',null,contentLabel);catalogField.setAttribute('aria-label','Texto do projeto');fieldOptions(catalogField);
+ if(!data.fields.some(f=>f.id===state.catalogField))state.catalogField=data.fields[0]?.id||'';
+ catalogField.value=state.catalogField;
+ const content=el('textarea',null,catalog);content.readOnly=true;content.setAttribute('aria-label','Prévia do texto do projeto');
+ const updateContent=()=>{content.value=data.fields.find(f=>f.id===state.catalogField)?.text||'';};
+ catalogField.onchange=()=>{state.catalogField=catalogField.value;updateContent();};updateContent();
+ const applyText=el('button','Aplicar texto à região selecionada',catalog);applyText.type='button';
+ applyText.onclick=()=>{
+  const r=state.regions.find(r=>r.id===state.selected);const field=data.fields.find(f=>f.id===state.catalogField);
+  if(!r||r.type==='photo'||!field){status.textContent='Selecione uma região de texto e um conteúdo do projeto.';return;}
+  r.source={kind:'pedagogical',field_id:field.id};paint();properties();
+  status.textContent=`${field.label} aplicado. Atualize a prévia e salve o template.`;
+ };
  const toolbar=el('div',null);toolbar.className='toolbar';
  const status=el('p','Desenhe um retângulo ou selecione uma região. As alterações ficam em rascunho até salvar.');
  const viewport=el('div',null);viewport.className='viewport';viewport.tabIndex=0;viewport.setAttribute('aria-label','Área visual do template');
@@ -17,7 +48,7 @@ export default function(component) {
  const overlay=document.createElementNS(svg.namespaceURI,'g');svg.append(overlay);
  const panel=el('div',null);panel.className='panel';
  const button=(text,action,parent=toolbar)=>{const b=el('button',text,parent);b.type='button';b.onclick=action;return b;};
- const fieldLabel=r=>r.source?.kind==='pedagogical'?r.source.field_id:r.type==='photo'?(data.requirements.find(q=>q.id===r.source.requirement_id)?.alias||r.source.requirement_id):r.source?.kind==='student_name'?'Nome do aluno':r.source?.kind==='project_title'?'Título do projeto':'Texto informado';
+ const fieldLabel=r=>r.source?.kind==='pedagogical'?`${data.fields.find(f=>f.id===r.source.field_id)?.label||'Texto'} · ${r.source.field_id}`:r.type==='photo'?(data.requirements.find(q=>q.id===r.source.requirement_id)?.alias||r.source.requirement_id):r.source?.kind==='student_name'?'Nome do aluno':r.source?.kind==='project_title'?'Título do projeto':'Texto informado';
  const defaultSource=type=>type==='photo'?{kind:'approved_photo',requirement_id:state.newField||data.requirements[0]?.id||''}:state.newField?{kind:'pedagogical',field_id:state.newField}:{kind:type==='student_name'?'student_name':'literal',text:''};
  const choose=el('label','Tipo antes de desenhar',toolbar);
  const newType=el('select',null,choose);newType.setAttribute('aria-label','Tipo antes de desenhar');
@@ -27,7 +58,8 @@ export default function(component) {
  function newFields(){
   newBinding.replaceChildren();
   const choices=state.newType==='photo'?data.requirements.map(q=>[q.id,`${q.alias} · ${q.description}`]):[['','Texto informado / nome do aluno'],...data.fields.map(f=>[f.id,`${f.id} · ${f.type}`])];
-  choices.forEach(([id,label])=>el('option',label,newBinding).value=id);
+  if(state.newType==='photo')choices.forEach(([id,label])=>el('option',label,newBinding).value=id);
+  else {el('option','Texto livre / nome do aluno',newBinding).value='';fieldOptions(newBinding);}
   const preferred=state.newType==='photo'?data.requirements[0]?.id:(data.fields.find(f=>f.type===state.newType)?.id||'');
   if(!choices.some(([id])=>id===state.newField))state.newField=preferred||'';
   newBinding.value=state.newField;
@@ -46,6 +78,10 @@ export default function(component) {
  const snap=(value,min,max)=>Math.max(min,Math.min(max,value));
  const point=e=>{const box=svg.getBoundingClientRect();return {x:snap((e.clientX-box.left)/box.width,0,1),y:snap((e.clientY-box.top)/box.height,0,1)};};
  function paint(){
+  catalogRegion.replaceChildren();el('option','Selecione uma região de texto',catalogRegion).value='';
+  state.regions.filter(r=>r.type!=='photo').forEach((r,i)=>el('option',`${i+1}. ${r.type} — ${fieldLabel(r)}`,catalogRegion).value=r.id);
+  catalogRegion.value=state.selected||'';
+  applyText.disabled=!state.regions.some(r=>r.id===state.selected&&r.type!=='photo');
   overlay.replaceChildren();
   state.regions.forEach(r=>{
    const g=document.createElementNS(svg.namespaceURI,'g');overlay.append(g);
@@ -79,7 +115,8 @@ export default function(component) {
   }else{
    select('Origem do texto',[['pedagogical','Campo pedagógico da professora'],['literal','Texto informado'],['project_title','Título do projeto'],['student_name','Nome do aluno']],r.source.kind,v=>{if(v==='literal'&&r.source.kind==='pedagogical'&&r.source.text===undefined)r.source.text=data.fields.find(f=>f.id===r.source.field_id)?.text||'';r.source.kind=v;if(v==='pedagogical'&&!r.source.field_id)r.source.field_id=data.fields.find(f=>f.type===r.type)?.id||data.fields[0]?.id;paint();properties();});
    if(r.source.kind==='pedagogical'){
-    select('Campo pedagógico',data.fields.map(f=>[f.id,`${f.id} · ${f.type}`]),r.source.field_id,v=>{r.source.field_id=v;paint();properties();});
+    const fieldSelect=select('Campo pedagógico',[],r.source.field_id,v=>{r.source.field_id=v;paint();properties();});
+    fieldOptions(fieldSelect);fieldSelect.value=r.source.field_id;
     const field=data.fields.find(f=>f.id===r.source.field_id);
     const original=el('textarea',null,el('label','Conteúdo associado (edite abaixo da prévia)',panel));original.value=field?.text||'';original.readOnly=true;original.setAttribute('aria-label','Conteúdo associado');
    }

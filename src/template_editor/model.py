@@ -135,6 +135,35 @@ def fill_project_texts(template):
     return draft,messages
 
 
+def change_project(template,project_id):
+    """Troca o bloco no rascunho e remapeia vinculos equivalentes sem mover regioes."""
+    catalog=pedagogy.load_catalog()
+    section=pedagogy.section_for(project_id,catalog)
+    if type(project_id) is not int or section is None:
+        raise ValueError('Selecione um projeto disponível.')
+    fields=pedagogy.text_fields(project_id,catalog)
+    draft=copy.deepcopy(template)
+    requirements=core.rows('SELECT id FROM requirements WHERE project_id=?',(project_id,))
+    by_number={int(r['id'].split('-')[1]):r['id'] for r in requirements}
+    def remap(source):
+        if source.get('kind')=='pedagogical':
+            key=section+'.'+source['field_id'].split('.')[-1]
+            if key not in fields: raise ValueError('O projeto escolhido não possui todos os campos usados. Ajuste as regiões antes de trocar.')
+            source['field_id']=key
+        elif source.get('kind')=='approved_photo':
+            number=int(resolve_requirement(source['requirement_id'])['id'].split('-')[1])
+            if number not in by_number: raise ValueError('O projeto escolhido não possui os requisitos das fotos usadas. Ajuste as regiões antes de trocar.')
+            source['requirement_id']=by_number[number]
+        elif source.get('kind')=='project_title' and project_id==0:
+            source.update(kind='pedagogical',field_id=section+'.title')
+    for region in draft['regions']:
+        remap(region['source'])
+        for source in region.get('sources_by_type',{}).values(): remap(source)
+    draft['project_id']=project_id
+    validate_template(draft)
+    return draft
+
+
 def normalized_box(x,y,width,height,image_width,image_height):
     if image_width<=0 or image_height<=0:
         raise ValueError('Dimensões de imagem inválidas.')

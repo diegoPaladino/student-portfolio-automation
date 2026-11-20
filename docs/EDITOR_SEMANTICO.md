@@ -4,6 +4,10 @@ Inicie pelo INICIAR_PORTFOLIOS.bat e abra Editor de Templates. Se o programa já
 
 ## Projeto 4
 
+Na própria tela do editor, **Projeto desta tela** mostra o bloco atual. Para trocar, selecione outro e clique em **Aplicar projeto**: os vínculos equivalentes e requisitos das fotos são atualizados no rascunho, mantendo posições, estilos e textos livres. A troca é recusada se o novo bloco não possui um campo já utilizado. O arquivo salvo só muda ao clicar em **Salvar template**.
+
+O painel **Textos disponíveis neste projeto** apresenta apenas os textos do bloco selecionado, separados em **Apresentação do projeto**, **Chamada e destaques** e **Legendas das fotos**. Para preencher uma região existente, escolha-a em **Região para receber o texto**, escolha o conteúdo em **Texto do projeto**, confira a prévia textual e clique em **Aplicar texto à região selecionada**. A opção **Chamada da criança** corresponde ao campo `individual_call` e pode ser aplicada a qualquer região de texto, inclusive uma região desenhada como subtítulo. Depois clique em **Atualizar prévia** e **Salvar template**. O tipo, posição e estilo da região são preservados; a escolha explícita substitui seu vínculo textual. Fotos são configuradas em Requisito pedagógico.
+
 Para um template que já tem fotos, clique em **Preencher textos do projeto** na barra do editor. O rascunho recebe o título e a introdução disponíveis na referência e as legendas correspondentes às fotos desenhadas. Campos literais vazios são vinculados automaticamente; textos preenchidos, vínculos, fotos e estilos existentes são preservados. A operação pode ser repetida sem duplicar os vínculos. As legendas ficam abaixo da foto quando há espaço; caso contrário, são posicionadas em outra área livre. Sem espaço, o editor avisa para ajustar as regiões e tentar novamente. Confira a prévia e clique em **Salvar template**. A instrução fotográfica do original não é incluída como legenda. As edições globais e individuais continuam valendo.
 
 1. Em Criar template a partir de uma arte, escolha o Projeto 4 e envie a arte local `P04_HORTA_BG_V01.png`. Os bytes originais serão preservados.

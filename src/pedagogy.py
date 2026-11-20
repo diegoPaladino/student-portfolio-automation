@@ -152,6 +152,22 @@ def text_fields(project_id, catalog=None):
             if value['section'] == section and value['type'] != 'evidence_description'}
 
 
+def field_label(field_id):
+    key=field_id.split('.')[-1]
+    labels={'title':'Título','subtitle':'Subtítulo / tema','introduction':'Abertura / apresentação',
+            'individual_call':'Chamada da criança','highlight':'Frase de destaque',
+            'heading':'Cabeçalho','student_name':'Nome da criança'}
+    if key.startswith('caption_'): return 'Legenda da foto '+key.split('_')[-1]
+    return labels.get(key,key)
+
+
+def field_group(field_id):
+    key=field_id.split('.')[-1]
+    if key in ('title','subtitle','heading','introduction'): return 'Apresentação do projeto'
+    if key.startswith('caption_'): return 'Legendas das fotos'
+    return 'Chamada e destaques'
+
+
 def initialize():
     with core.connection() as db:
         db.execute('''CREATE TABLE IF NOT EXISTS pedagogical_edits(
