@@ -69,6 +69,7 @@ def show():
     template=st.session_state.editor_template
     st.write(f"{template['name']} · {project_map[template['project_id']]} · versão salva {template['version']}")
     st.caption('As coordenadas usam porcentagens da arte. Zoom e rolagem não alteram as posições. Salve antes de abrir ou criar outro template.')
+    st.caption('Use Preencher textos do projeto para vincular textos vazios à referência e inserir introdução e legendas ausentes. As legendas usam o texto após a orientação FOTO, sem incluir essa orientação. Confira as posições e salve o template.')
     new_name=st.text_input('Nome do template em edição',template['name'],key='template_name_'+st.session_state.editor_token,max_chars=120)
     mode=st.radio('Dados da prévia',['Sintéticos (sem evidências reais)','Aluno real — somente local'])
     sid=None
@@ -93,7 +94,20 @@ def show():
         image=_background_uri(template),width=template['background']['width'],height=template['background']['height'],
         types=list(model.TYPES),requirements=requirements,fields=effective_fields,
         fonts=typography.families(),presets={kind:typography.preset(kind) for kind in model.TYPES}),key='visual_'+st.session_state.editor_token,
-        on_save_change=lambda:None,on_preview_change=lambda:None)
+        on_save_change=lambda:None,on_preview_change=lambda:None,on_fill_change=lambda:None)
+    fill=result.get('fill')
+    if fill:
+        draft=copy.deepcopy(template)
+        draft['regions']=fill['regions']
+        draft['name']=new_name.strip()
+        draft,messages=model.fill_project_texts(draft)
+        st.session_state.editor_template=draft
+        st.session_state.editor_token=uuid.uuid4().hex
+        image,warnings=render_preview(draft,sid)
+        st.session_state.editor_preview=(image,messages+warnings)
+        st.session_state.editor_preview_mode=(mode,sid)
+        st.session_state.editor_flash='Textos vinculados no rascunho. Confira a prévia e clique em Salvar template.'
+        st.rerun()
     save=result.get('save');preview=result.get('preview')
     if save or preview:
         draft=copy.deepcopy(template)

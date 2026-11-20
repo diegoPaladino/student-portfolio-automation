@@ -109,6 +109,10 @@ def test_semantic_p04_create_style_save_restart_reopen(tmp_path,semantic_server)
         assert page.get_by_label('Conteúdo associado',exact=True).input_value()=='TÍTULO GLOBAL SINTÉTICO'
         assert page.get_by_label('Fonte (referência 1080 px)',exact=True).input_value()=='48'
         assert json.loads(saved[0].read_text(encoding='utf-8'))==original
+        page.get_by_role('button',name='Preencher textos do projeto',exact=True).click()
+        page.get_by_text('Textos vinculados no rascunho. Confira a prévia e clique em Salvar template.',exact=True).wait_for(timeout=20000)
+        playwright.expect(svg.locator('rect[data-id]')).to_have_count(6)
+        assert json.loads(saved[0].read_text(encoding='utf-8'))==original
         page.screenshot(path=str(tmp_path/'semantic-reopened.png'))
         import shutil
         shutil.copy2(tmp_path/'semantic-reopened.png',Path(__file__).resolve().parents[1]/'outputs/editor-semantico-sintetico.png')

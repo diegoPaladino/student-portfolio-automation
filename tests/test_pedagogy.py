@@ -45,6 +45,44 @@ def test_parse_preserves_text_origins_and_missing():
     with pytest.raises(ValueError): pedagogy.parse_content(raw.replace('PROJETO 5','PROJETO 99'))
 
 
+def test_fill_project_texts_preserves_layout_and_is_repeatable(local):
+    draft=template(local)
+    draft['regions'][0].update(x=.05,y=.5,width=.4,height=.3)
+    photo=copy.deepcopy(draft['regions'][0]);photo.update(id='photo2',x=.55)
+    photo['source']['requirement_id']='04-2'
+    draft['regions'].append(photo)
+    draft['regions'].append(dict(id='intro',type='body_text',x=.05,y=.15,width=.9,height=.2,
+        source={'kind':'literal','text':''}))
+    original=copy.deepcopy(draft)
+    filled,messages=model.fill_project_texts(draft)
+    assert draft==original and not messages
+    assert filled['regions'][:2]==original['regions'][:2]
+    assert filled['regions'][2]['source']=={'kind':'pedagogical','field_id':'P04.introduction'}
+    for number in (1,2):
+        caption=next(r for r in filled['regions'] if r['source'].get('field_id')==f'P04.caption_{number}')
+        assert caption['y']>=.8
+    again,messages=model.fill_project_texts(filled)
+    assert again==filled and not messages
+    saved=model.save_template(filled)
+    assert model.load_template(saved['id'])==saved
+    image,warnings=render_preview(saved)
+    assert image.width==1080 and not any('TEXTO AUSENTE' in w for w in warnings)
+    duplicate=copy.deepcopy(original)
+    duplicate['regions'][1]['source']['requirement_id']='04-1'
+    filled,messages=model.fill_project_texts(duplicate)
+    assert any('mesmo requisito' in message for message in messages)
+    assert len([r for r in filled['regions'] if r['source'].get('field_id')=='P04.caption_1'])==1
+
+
+def test_fill_preserves_custom_text_and_reports_no_room(local):
+    draft=template(local)
+    draft['regions'][0].update(x=0,y=.1,width=1,height=.9)
+    draft['regions'].append(dict(id='intro',type='body_text',x=0,y=0,width=1,height=.1,
+        source={'kind':'literal','text':'CONTEUDO SINTETICO PERSONALIZADO'}))
+    filled,messages=model.fill_project_texts(draft)
+    assert filled==draft and messages
+
+
 def test_catalog_import_reload_never_overwrites_edits(local):
     path=pedagogy.source_path();before=path.read_bytes()
     catalog=pedagogy.import_catalog()

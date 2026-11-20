@@ -4,6 +4,8 @@ Inicie pelo INICIAR_PORTFOLIOS.bat e abra Editor de Templates. Se o programa já
 
 ## Projeto 4
 
+Para um template que já tem fotos, clique em **Preencher textos do projeto** na barra do editor. O rascunho recebe o título e a introdução disponíveis na referência e as legendas correspondentes às fotos desenhadas. Campos literais vazios são vinculados automaticamente; textos preenchidos, vínculos, fotos e estilos existentes são preservados. A operação pode ser repetida sem duplicar os vínculos. As legendas ficam abaixo da foto quando há espaço; caso contrário, são posicionadas em outra área livre. Sem espaço, o editor avisa para ajustar as regiões e tentar novamente. Confira a prévia e clique em **Salvar template**. A instrução fotográfica do original não é incluída como legenda. As edições globais e individuais continuam valendo.
+
 1. Em Criar template a partir de uma arte, escolha o Projeto 4 e envie a arte local `P04_HORTA_BG_V01.png`. Os bytes originais serão preservados.
 2. Selecione `title` em Tipo antes de desenhar. Em Campo da nova região, escolha `P04.title` e arraste o retângulo sobre a arte.
 3. O painel Conteúdo associado mostra o texto da professora automaticamente. A lista e o rótulo da região mostram `title — P04.title`.

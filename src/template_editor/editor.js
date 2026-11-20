@@ -42,6 +42,7 @@ export default function(component) {
  button('Excluir região',()=>{state.regions=state.regions.filter(r=>r.id!==state.selected);state.selected=null;paint();properties();});
  button('Salvar template',()=>setTriggerValue('save',{regions:state.regions}));
  button('Atualizar prévia',()=>setTriggerValue('preview',{regions:state.regions}));
+ button('Preencher textos do projeto',()=>setTriggerValue('fill',{regions:state.regions}));
  const snap=(value,min,max)=>Math.max(min,Math.min(max,value));
  const point=e=>{const box=svg.getBoundingClientRect();return {x:snap((e.clientX-box.left)/box.width,0,1),y:snap((e.clientY-box.top)/box.height,0,1)};};
  function paint(){

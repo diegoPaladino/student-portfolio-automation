@@ -61,3 +61,7 @@ se ele nao responder. O lock nao identifica servidores iniciados manualmente.
 Estado local fica em outputs, excluido do Git. Eventos launcher_ready e
 launcher_failed usam o catalogo sanitizado existente, sem saida bruta externa.
 Nao ha alteracao de banco, dashboard, editor ou catalogo pedagogico.
+
+## Preenchimento de textos no rascunho
+
+O comando Preencher textos do projeto envia as regioes atuais do componente, incluindo alteracoes ainda nao salvas. `model.fill_project_texts` trabalha em copia, vincula literais vazios e acrescenta titulo, introducao e legendas disponiveis, sem substituir textos preenchidos ou mover fotos. Legendas seguem o requisito da foto, aceitando alias e ID canonico; requisitos repetidos geram aviso. Novas regioes ocupam areas livres, preferindo abaixo da foto; falta de espaco e informada sem sobrepor regioes existentes. A interface renova o componente e a previa, mas a persistencia exige Salvar template. A resolucao de conteudo e personalizacao continua na composicao existente; nenhuma instrucao fotografica vira legenda.

@@ -10,7 +10,7 @@ import re
 import uuid
 import threading
 import warnings
-from PIL import Image, ImageOps
+from PIL import Image, ImageDraw, ImageOps
 from src import settings, core, observability as obs
 from src import pedagogy
 from src.rendering import typography
@@ -74,6 +74,65 @@ def import_background(content):
 def new_template(background,project_id,name):
     return dict(id=uuid.uuid4().hex,schema_version=2,version=0,name=name,project_id=project_id,
                 background=copy.deepcopy(background),regions=[],module_order=0,overlap=0,transition={'mode':'none'})
+
+
+def fill_project_texts(template):
+    """Acrescenta vinculos ausentes no rascunho sem substituir conteudo existente."""
+    draft=copy.deepcopy(template)
+    fields=pedagogy.text_fields(draft['project_id'],pedagogy.load_catalog())
+    regions=draft['regions']
+    messages=[]
+    targets=[(key,field,None) for key,field in fields.items()
+             if key.endswith(('.title','.introduction'))]
+    photo_requirements=set()
+    for photo in list(regions):
+        if photo['type']!='photo': continue
+        req=resolve_requirement(photo['source']['requirement_id'])['id']
+        if req in photo_requirements:
+            messages.append(f'{req}: mais de uma regiao de foto usa o mesmo requisito. Confira o Requisito pedagogico de cada foto; a legenda segue esse vinculo.')
+        photo_requirements.add(req)
+        number=int(req.split('-')[1])
+        for key,field in fields.items():
+            if key.endswith(f'.caption_{number}'):
+                targets.append((key,field,photo))
+    for key,field,photo in targets:
+        kind=field['type']
+        if any(r['source'].get('field_id')==key and r['source'].get('kind')=='pedagogical' for r in regions): continue
+        if kind=='title' and any(r['source'].get('kind')=='project_title' for r in regions): continue
+        # Texto literal preenchido e qualquer vinculo existente ficam intactos.
+        empty=next((r for r in regions if r['type']==kind and r['source'].get('kind')=='literal'
+                    and not r['source'].get('text','').strip()),None)
+        if empty:
+            empty['source']={'kind':'pedagogical','field_id':key}
+            continue
+        if kind!='caption' and any(r['type']==kind for r in regions): continue
+        w=photo['width'] if photo else .9
+        style=typography.preset(kind)
+        h=.08 if kind=='title' else .19
+        if photo:
+            text,_=pedagogy.resolve_text(key,None)
+            face=typography.font(style['font_size'],style['font_family'],style['weight'])
+            pen=ImageDraw.Draw(Image.new('RGB',(1,1)))
+            lines=typography.layout(text,pen,face,max(1,round(w*1080)-2*style['padding']),True,0)
+            ascent,descent=face.getmetrics()
+            line_height=max(ascent+descent,round(style['font_size']*style['line_height']))
+            h=max(.04,(len(lines)*line_height+2*style['padding']+2)/(1080*draft['background']['height']/draft['background']['width']))
+        x=photo['x'] if photo else .05
+        preferred=photo['y']+photo['height']+.008 if photo else (.025 if kind=='title' else .12)
+        candidates=[preferred]+[i/100 for i in range(2,98,2)]
+        def available(x,y):
+            return x+w<=.99 and y+h<=.99 and all(x+w<=r['x'] or r['x']+r['width']<=x or
+                y+h<=r['y'] or r['y']+r['height']<=y for r in regions)
+        positions=[(x,y) for y in candidates]+[(i/100,y) for y in candidates for i in range(2,98,2)]
+        position=next(((x,y) for x,y in positions if available(x,y)),None)
+        if position is None or len(regions)>=100:
+            messages.append(f'{key}: sem espaco livre; ajuste as regioes e tente novamente.')
+            continue
+        x,y=position
+        regions.append(dict(id=uuid.uuid4().hex,type=kind,x=x,y=y,width=w,height=h,
+            source={'kind':'pedagogical','field_id':key},text_style=style))
+    validate_template(draft)
+    return draft,messages
 
 
 def normalized_box(x,y,width,height,image_width,image_height):
