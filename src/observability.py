@@ -16,6 +16,8 @@ from src import settings
 _lock = threading.RLock()
 _correlation = contextvars.ContextVar('portfolio_correlation', default=None)
 EVENTS = {
+    'pedagogical_text_saved': 'Revisao de texto pedagogico confirmada.',
+    'launcher_ready': 'Servidor local pronto.', 'launcher_failed': 'Inicializacao local falhou.',
     'startup': 'Aplicação inicializada.', 'shutdown': 'Encerramento do processo detectado.',
     'operation_failed': 'Operação não concluída.', 'database_failed': 'Acesso ou transação do banco falhou.',
     'audit_failed': 'Auditoria pendente; nova tentativa ocorrerá na próxima operação.',
@@ -25,10 +27,11 @@ EVENTS = {
     'photo_replaced': 'Fotografia substituída.', 'report_exported': 'Relatório Excel gerado.',
     'state_changed': 'Situação da evidência alterada.', 'import_students': 'Importação de cadastros confirmada.',
     'save_student': 'Cadastro confirmado.', 'invalid_file': 'Arquivo inválido ou incompatível.',
+    'template_saved': 'Template salvo localmente.',
     'unknown_student': 'Associação a aluno inexistente recusada.', 'unknown': 'Evento não reconhecido.'
 }
-OPERATIONS = {'initialize','connection','import_students','save_student','import_photo','import_folder',
-              'associate','review','unassign','preview','photo_path','report','ui','startup','shutdown','audit','unknown'}
+OPERATIONS = {'save_text','launcher','initialize','connection','import_students','save_student','import_photo','import_folder',
+              'associate','review','unassign','preview','photo_path','report','ui','startup','shutdown','audit','unknown','import_background','save_template','load_template','list_templates','render_preview'}
 RESULTS = {'success','failure','pending'}
 
 
@@ -60,14 +63,14 @@ class SafeFormatter(logging.Formatter):
         operation = operation if operation in OPERATIONS else 'unknown'
         cid = getattr(record,'correlation_id',None)
         cid = cid if isinstance(cid,str) and len(cid)==32 and all(c in '0123456789abcdef' for c in cid) else None
-        source = 'app' if operation=='ui' else 'observability' if operation in {'startup','shutdown','audit','unknown'} else 'core'
+        source = 'app' if operation=='ui' else 'observability' if operation in {'startup','shutdown','audit','unknown'} else 'template_editor' if operation in {'import_background','save_template','load_template','list_templates','render_preview'} else 'core'
         payload = dict(timestamp=timestamp(),level=record.levelname,module=source,operation=operation,
                        correlation_id=cid,event=event,description=EVENTS[event])
         if record.exc_info:
             # Stack técnico sem mensagem de exceção, código-fonte, argumentos, nomes externos ou caminhos.
             frames = traceback.extract_tb(record.exc_info[2])
             payload['exception_type'] = record.exc_info[0].__name__ if record.exc_info[0].__module__ in ('builtins','sqlite3','PIL') else 'Exception'
-            payload['stack'] = [{'module':Path(f.filename).stem if Path(f.filename).stem in {'core','app','observability','diagnostics'} else 'external',
+            payload['stack'] = [{'module':Path(f.filename).stem if Path(f.filename).stem in {'core','app','observability','diagnostics','model','preview','ui'} else 'external',
                                  'line':f.lineno} for f in frames]
         return json.dumps(payload,ensure_ascii=False)
 

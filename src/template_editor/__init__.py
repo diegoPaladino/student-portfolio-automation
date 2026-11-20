@@ -1,0 +1,1 @@
+﻿"""Editor de templates locais."""

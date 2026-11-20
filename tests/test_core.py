@@ -5,6 +5,10 @@ from src import core,settings
 
 @pytest.fixture
 def local(tmp_path,monkeypatch):
+    from test_pedagogy import synthetic_source
+    content=tmp_path/'synthetic-content.txt'
+    content.write_text(synthetic_source(),encoding='utf-8')
+    monkeypatch.setenv('PORTFOLIO_CONTENT_FILE',str(content))
     monkeypatch.setattr(settings,'DATA',tmp_path)
     monkeypatch.setattr(settings,'DB',tmp_path/'test.sqlite3')
     monkeypatch.setattr(settings,'IMAGES',tmp_path/'images')

@@ -14,7 +14,7 @@ except (sqlite3.Error, OSError, ValueError):
     st.stop()
 st.title('🌱 Portfólios da turma · 2026')
 st.caption('Organize as memórias de cada criança. Somente fotos aprovadas contam para a conclusão.')
-page=st.sidebar.radio('Navegação',['Visão geral','Alunos','Aluno em detalhe','Importar e classificar','Revisar evidências','Relatório de pendências'])
+page=st.sidebar.radio('Navegação',['Visão geral','Alunos','Aluno em detalhe','Importar e classificar','Revisar evidências','Relatório de pendências','Editor de Templates'])
 try:
     students=core.rows('SELECT * FROM students ORDER BY name')
 except (sqlite3.Error,OSError):
@@ -110,6 +110,9 @@ try:
                     core.review(eid,state); st.rerun()
                 if st.button('Desvincular para corrigir a classificação'):
                     core.unassign(eid); st.rerun()
+    elif page=='Editor de Templates':
+        from src.template_editor.ui import show
+        show()
     else:
         data=core.detail()
         show_table([{'Criança':r['aluno'],'Projeto':r['projeto'],'Campo':r['requisito'],'Requisito':r['descricao'],'Situação':r['estado']} for r in data if r['obrigatoria'] and r['estado']!='Aprovada'])

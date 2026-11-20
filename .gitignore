@@ -5,6 +5,11 @@
 !/requirements.txt
 !/app.py
 !/iniciar.ps1
+!/INICIAR_PORTFOLIOS.bat
+!/INSTALAR_AMBIENTE.bat
+!/scripts/
+/scripts/*
+!/scripts/ambiente.ps1
 !/src/
 !/config/
 !/tests/
@@ -20,6 +25,7 @@
 !/docs/ARQUITETURA.md
 !/docs/PLANO_MVPS.md
 !/docs/VALIDACAO.md
+!/docs/EDITOR_SEMANTICO.md
 
 # Local environments, caches, temporary files and logs.
 .venv/
@@ -91,3 +97,15 @@ logs/
 *.jsonl
 *.log.*
 !/AGENTS.md
+
+# Local artwork is private. Track only editor/rendering source assets.
+assets/
+!/src/template_editor/
+/src/template_editor/*
+!/src/template_editor/*.py
+!/src/template_editor/editor.js
+!/src/template_editor/editor.css
+!/src/template_editor/editor.html
+!/src/rendering/
+/src/rendering/*
+!/src/rendering/*.py

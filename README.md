@@ -4,15 +4,38 @@ Aplicação local para cadastro, organização e aprovação de fotografias. Os 
 
 ## Instalar e executar no Windows
 
-Abra o PowerShell neste diretório, com Python 3.11 ou compatível:
+Na primeira execucao, abra `INSTALAR_AMBIENTE.bat`. Depois use
+`INICIAR_PORTFOLIOS.bat` para abrir o dashboard automaticamente no navegador.
+Mantenha a janela aberta. Para encerrar, salve rascunhos e pressione **Ctrl+C
+nessa janela**. Fechar somente a aba do navegador nao encerra o servidor.
+
+O preparo procura o ambiente ativo (`VIRTUAL_ENV`) e ambientes na raiz com
+`pyvenv.cfg`, independentemente do nome. Sem ambiente, cria `.venv` com Python
+3.11 ou superior disponivel no PATH, aproveitando pacotes do Python de origem
+via `--system-site-packages`. Mantenha esse Python instalado. Se faltarem
+requisitos, o instalador usa pip e exige rede. O uso cotidiano nunca instala
+pacotes. Pytest e ferramenta de desenvolvimento: sua versao nao bloqueia o uso
+cotidiano; instale requirements.txt para adequar o ambiente de testes.
+
+O inicializador executa `app.py` em 127.0.0.1, escolhendo porta entre 8501 e 8600.
+Aguarda HTTP 200/ok antes de solicitar abertura do navegador. Se ele nao abrir,
+use o endereco exibido. Outra execucao reutiliza a instancia do inicializador.
+Servidores iniciados manualmente nao possuem essa identidade: encerre-os antes
+de migrar para o novo inicializador, pois podem usar o mesmo banco. Outros
+aplicativos nao sao encerrados. Nao apague outputs/launcher.lock ou
+outputs/launcher.port durante o uso. A porta e removida no encerramento normal.
+Evite fechar a janela a forca; use Ctrl+C para finalizar tambem o processo filho.
+
+Falhas ficam em logs/errors.log (ou PORTFOLIO_LOG_DIR), sem saida bruta do
+Streamlit. `iniciar.ps1` usa o mesmo fluxo. E necessario acesso de escrita ao
+projeto. Python continua necessario: nao se trata de executavel independente.
+
+Alternativa tecnica apos o preparo:
 
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe -m streamlit run app.py --server.address 127.0.0.1 --server.maxUploadSize 30 --browser.gatherUsageStats false
+.\.venv\Scripts\python.exe -m src.launcher
+.\.venv\Scripts\python.exe -m src.launcher --check
 ```
-
-Abra http://127.0.0.1:8501. Para usar `iniciar.ps1`, ative o ambiente antes ou execute o mesmo comando acima. Encerre com Ctrl+C.
 
 1. Abra **Alunos** e clique em **Importar lista original de alunos**. Importações repetidas não duplicam matrículas; nomes existentes só mudam pela edição explícita.
 2. Em **Importar e classificar**, selecione fotografias ou informe uma pasta local. A importação por pastas percorre subpastas. JPEG, PNG e WEBP são aceitos, até 30 MB cada.
@@ -71,3 +94,29 @@ Logs usam mensagens de um catálogo fechado e nunca interpolam dados recebidos. 
 Auditoria distingue recebimento, classificação, aprovação, rejeição, desvinculação, substituição confirmada e geração de Excel. “Relatório exportado” confirma bytes Excel gerados; não confirma que o navegador salvou o download. Clique em **Gerar relatório Excel atualizado** para preparar o arquivo; navegar ou reexecutar a tela não gera exportações repetidas. O download conserva a versão preparada até nova geração.
 
 Eventos pendentes ficam no SQLite se houver falha na escrita do JSONL e são tentados novamente no próximo acesso bem-sucedido ao banco. O banco é a fonte de verdade. Uma interrupção entre escrita do JSONL e confirmação da entrega pode repetir uma linha com o mesmo `event_id`; consumidores devem deduplicar pelo identificador dentro do mesmo banco. Rotação limita o JSONL; o histórico e o outbox permanecem no SQLite. Uso suportado: um processo local do aplicativo. Não abrir vários servidores escrevendo nos mesmos logs.
+
+## Editor de Templates — MVP 2, etapa 1
+
+O editor agora oferece vínculos pedagógicos, edição global/individual com histórico e controles tipográficos. Consulte o [guia do editor semântico](docs/EDITOR_SEMANTICO.md) para o fluxo completo, restauração e limites.
+
+Abra **Editor de Templates** no menu. A arte deve estar pronta: esta aplicação não gera fundos Low Poly 3D.
+
+1. Expanda **Criar template a partir de uma arte**, selecione PNG/JPEG/WebP (até 30 MB e 40 megapixels), informe o nome e o projeto e clique em **Importar arte e criar rascunho**. A proporção e a altura da arte são preservadas; não há formato 9:16 obrigatório.
+2. Clique em **Desenhar região** e arraste o mouse sobre o fundo. Depois use **Selecionar / mover**: arraste a região para deslocá-la ou o quadrado inferior direito para redimensioná-la. Use zoom, barras de rolagem e **Ver arte inteira** para navegar.
+3. Escolha **Tipo antes de desenhar** e **Campo da nova região** antes de arrastar. Tipos: `title`, `subtitle`, `body_text`, `photo`, `caption`, `highlight`, `student_name`. A lista identifica tipo e vínculo. Fotos usam um requisito do projeto, exibido como `P04_F01`, correspondente a `04-1` no catálogo existente. `contain` mostra a foto inteira; `cover` recorta para preencher e permite ajustar o foco horizontal/vertical. A ordem das regiões controla a sobreposição.
+4. Clique em **Atualizar prévia**. O modo sintético exibe marcadores explicitamente demonstrativos, sem gerar evidências. O modo aluno real é somente local, usa o primeiro nome como nome de uso e exclusivamente suas fotos aprovadas. Campos sem aprovação são marcados como ausentes. Textos não são inventados: preencha os conteúdos literais quando necessários. Textos maiores que a região são cortados com aviso.
+5. Clique em **Salvar template**. Abra **Abrir um template salvo**, selecione o identificador e clique em **Abrir template** para editar novamente. Salve antes de criar ou abrir outro template. Trocar a seleção de aluno exige clicar em **Atualizar prévia**; nenhuma prévia é salva em arquivo pelo aplicativo.
+
+Fundos originais ficam em `assets/backgrounds/`, com nomes por hash e bytes preservados; o editor usa uma cópia visual corrigida por EXIF. Configurações ficam em `data/templates/<id>.json` e revisões imutáveis em `data/templates/versions/`. Com `PORTFOLIO_DATA_DIR` alternativo, os fundos ficam em `<dados>/assets/backgrounds/`. Faça backup dos templates junto com os fundos, além do banco. Artes, templates e capturas locais estão excluídos do Git. Não publique templates que contenham textos pessoais.
+
+O componente JavaScript/SVG local usa a API v2 do Streamlit 1.53 ou superior, sem CDN, npm, serviço externo ou biblioteca adicional de execução. A suíte principal testa modelo, composição e regressões. Para também executar o teste opcional de mouse em Chromium:
+
+```powershell
+python -m pip install playwright
+python -m playwright install chromium
+python -m src.validate
+```
+
+Sem Playwright/Chromium, o teste de navegador é marcado como ignorado; isso não valida interação visual. Uma captura sintética da última execução local fica em `outputs/editor-template-sintetico.png`. Não é arte-matriz nem evidência. A validação em navegador foi feita com dados sintéticos e uma imagem branca de teste.
+
+Limites desta etapa: sem PDF, lote, transições automáticas ou prévia contínua de vários módulos; sem rich text ou corte arrastável da própria foto. O enquadramento usa controles de foco em porcentagem. A interface abre a revisão atual; versões anteriores são preservadas para recuperação técnica, sem seletor de histórico. Use armazenamento local com suporte a hard links (como NTFS); pastas de rede/FAT não foram validadas. Em falha de gravação, arquivos temporários e snapshots são preservados, e nova tentativa pode pular um número de versão. Fechar o navegador perde rascunhos não salvos.
