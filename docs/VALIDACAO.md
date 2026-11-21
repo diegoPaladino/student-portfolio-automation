@@ -166,3 +166,180 @@ Inicialização real local concluída: 26 alunos importados da lista original; 2
 - **NAO TESTADO - revisao manual interativa em navegador pela professora**, fotos reais, dispositivos de toque e navegadores alem de Chromium. Inspecao estatica e automacao nao equivalem a revisao manual. Nenhuma verificacao HTTP manual independente.
 - **APROVADO - higiene**: `git diff --check` sem erros; arquivos rastreados conferidos. Originais, fotos, banco, catalogo privado, logs e capturas nao integram a alteracao. Sem novas dependencias; permanece a limitacao anterior da versao instalada de pytest.
 - **APROVADO - suite automatizada final**: `.venv/Scripts/python.exe -m src.validate`; 51 aprovados, 1 ignorado, zero falhas/erros, exit 0, em 107,73 s. Resumo persistente e JUnit por execucao permanecem em outputs. **NAO TESTADO - caso ignorado**: teste do inicializador que precisa reservar a porta 8501, ocupada no ambiente; nenhum processo existente foi encerrado.
+
+
+---
+
+## Rastreabilidade de solicitações e implementações
+
+Esta seção acrescenta vínculos aos relatórios anteriores, que permanecem integralmente preservados. Ler em conjunto com [HISTORICO_PROMPTS.md](HISTORICO_PROMPTS.md). IDs DEV são solicitações formais; IDs RETRO são índices retrospectivos. A data do relatório ou do commit não prova a data de recebimento do prompt. Resultados históricos abaixo não foram reexecutados nesta tarefa.
+
+### Índice retrospectivo
+
+<a id="retro-2026-001"></a>
+
+#### RETRO-2026-001 — MVP 1
+
+- Solicitação/objetivo e origem: [RETRO-2026-001 no histórico](HISTORICO_PROMPTS.md#retro-2026-001).
+- Evidência anterior: seção **Validação do MVP 1**, neste documento; 2026-11-17 (data do primeiro commit; horário da solicitação não disponível).
+- Implementação/arquivos: src/core.py; src/settings.py; app.py; config/catalog.json; tests/test_core.py; tests/test_ui.py. Resumo: Cadastro, importação/classificação manual, revisão, completude e Excel local.
+- Verificação histórica: 8 testes e AppTest registrados; não reexecutados nesta tarefa. Revisão de usabilidade pendente.
+- Versionamento: `97fd03c`; commit confirmado localmente. As bases e árvores modificadas na ocasião são as registradas na seção legada; não confundir base com entrega.
+- Estado: IMPLEMENTADO; TESTADO segundo o relatório legado; VALIDADO MANUALMENTE em navegador: não comprovado; PENDENTE/BLOQUEADO: conforme limites históricos, sem nova validação nesta tarefa.
+
+<a id="retro-2026-002"></a>
+
+#### RETRO-2026-002 — Observabilidade e diagnóstico
+
+- Solicitação/objetivo e origem: [RETRO-2026-002 no histórico](HISTORICO_PROMPTS.md#retro-2026-002).
+- Evidência anterior: seção **Validação incremental — logs, diagnóstico e continuidade**, neste documento; 2026-11-17T16:24:22-03:00 (registro da validação).
+- Implementação/arquivos: src/observability.py; src/diagnostics.py; src/validate.py; src/core.py; app.py; tests/test_observability.py. Resumo: Logging sanitizado, auditoria transacional/outbox, diagnóstico somente leitura e validador persistente.
+- Verificação histórica: 22 testes aprovados e HTTP 200 registrados. Recuperação física e revisão manual permanecem sem comprovação.
+- Versionamento: `426db95`; commit confirmado localmente. As bases e árvores modificadas na ocasião são as registradas na seção legada; não confundir base com entrega.
+- Estado: IMPLEMENTADO; TESTADO segundo o relatório legado; VALIDADO MANUALMENTE em navegador: não comprovado; PENDENTE/BLOQUEADO: conforme limites históricos, sem nova validação nesta tarefa.
+
+<a id="retro-2026-003"></a>
+
+#### RETRO-2026-003 — Editor visual de templates
+
+- Solicitação/objetivo e origem: [RETRO-2026-003 no histórico](HISTORICO_PROMPTS.md#retro-2026-003).
+- Evidência anterior: seção **MVP 2 — etapa 1: editor visual de templates**, neste documento; 2026-11-17T21:43:27-03:00 (registro da validação).
+- Implementação/arquivos: src/template_editor/; src/rendering/preview.py; tests/test_templates.py; tests/test_template_browser.py. Resumo: Regiões sobre arte local, movimento/zoom, composição e versões imutáveis de templates.
+- Verificação histórica: 39 testes aprovados e Chromium com dados sintéticos registrados. Toque e revisão interativa da professora não comprovados.
+- Versionamento: `e90aeee`; consolidação conjunta, sem commit isolado desta subentrega. As bases e árvores modificadas na ocasião são as registradas na seção legada; não confundir base com entrega.
+- Estado: IMPLEMENTADO; TESTADO segundo o relatório legado; VALIDADO MANUALMENTE em navegador: não comprovado; PENDENTE/BLOQUEADO: conforme limites históricos, sem nova validação nesta tarefa.
+
+<a id="retro-2026-004"></a>
+
+#### RETRO-2026-004 — Inicializador Windows
+
+- Solicitação/objetivo e origem: [RETRO-2026-004 no histórico](HISTORICO_PROMPTS.md#retro-2026-004).
+- Evidência anterior: seção **Inicializador Windows - verificacoes locais**, neste documento; 2026-11-19T20:48:32-03:00 (registro da validação).
+- Implementação/arquivos: INICIAR_PORTFOLIOS.bat; INSTALAR_AMBIENTE.bat; iniciar.ps1; scripts/ambiente.ps1; src/launcher.py; tests/test_launcher.py. Resumo: Preparo separado, descoberta de ambiente, health HTTP, navegador e encerramento do processo filho.
+- Verificação histórica: 42 testes aprovados e HTTP automatizado registrados. Pip check global reprovado; atualização de pytest bloqueada na ocasião. Duplo clique não validado.
+- Versionamento: `e90aeee`; consolidação conjunta, sem commit isolado desta subentrega. As bases e árvores modificadas na ocasião são as registradas na seção legada; não confundir base com entrega.
+- Estado: IMPLEMENTADO; TESTADO segundo o relatório legado; VALIDADO MANUALMENTE em navegador: não comprovado; PENDENTE/BLOQUEADO: conforme limites históricos, sem nova validação nesta tarefa.
+
+<a id="retro-2026-005"></a>
+
+#### RETRO-2026-005 — Editor semântico
+
+- Solicitação/objetivo e origem: [RETRO-2026-005 no histórico](HISTORICO_PROMPTS.md#retro-2026-005).
+- Evidência anterior: seção **MVP 2 — editor semântico e textos pedagógicos**, neste documento; 2026-11-19T21:46:02-03:00 (registro da validação).
+- Implementação/arquivos: src/template_editor/model.py; src/template_editor/ui.py; src/template_editor/editor.js; src/rendering/typography.py; src/rendering/preview.py. Resumo: Vínculos semânticos, estilos tipográficos e composição com precedência individual/global/original.
+- Verificação histórica: 48 testes aprovados e 1 ignorado registrados na entrega conjunta. Revisão manual interativa pendente.
+- Versionamento: `e90aeee`; consolidação conjunta, sem commit isolado desta subentrega. As bases e árvores modificadas na ocasião são as registradas na seção legada; não confundir base com entrega.
+- Estado: IMPLEMENTADO; TESTADO segundo o relatório legado; VALIDADO MANUALMENTE em navegador: não comprovado; PENDENTE/BLOQUEADO: conforme limites históricos, sem nova validação nesta tarefa.
+
+<a id="retro-2026-006"></a>
+
+#### RETRO-2026-006 — Integração de textos pedagógicos
+
+- Solicitação/objetivo e origem: [RETRO-2026-006 no histórico](HISTORICO_PROMPTS.md#retro-2026-006).
+- Evidência anterior: seção **MVP 2 — editor semântico e textos pedagógicos**, neste documento; 2026-11-19T21:46:02-03:00 (mesmo registro da entrega semântica).
+- Implementação/arquivos: src/pedagogy.py; src/template_editor/ui.py; src/rendering/preview.py; tests/test_pedagogy.py; tests/test_template_browser.py. Resumo: Importação local com origem verificável, edições com histórico e personalização pelo prenome.
+- Verificação histórica: Mesma suíte de 48 aprovados/1 ignorado; não é uma segunda execução independente. Arquivos privados ficam fora do Git.
+- Versionamento: `e90aeee`; consolidação conjunta, sem commit isolado desta subentrega. As bases e árvores modificadas na ocasião são as registradas na seção legada; não confundir base com entrega.
+- Estado: IMPLEMENTADO; TESTADO segundo o relatório legado; VALIDADO MANUALMENTE em navegador: não comprovado; PENDENTE/BLOQUEADO: conforme limites históricos, sem nova validação nesta tarefa.
+
+<a id="retro-2026-007"></a>
+
+#### RETRO-2026-007 — Preenchimento automático de textos
+
+- Solicitação/objetivo e origem: [RETRO-2026-007 no histórico](HISTORICO_PROMPTS.md#retro-2026-007).
+- Evidência anterior: seção **Textos automaticos no rascunho do template**, neste documento; 2026-11-20T16:08:12-03:00 (registro da validação).
+- Implementação/arquivos: src/template_editor/model.py; src/template_editor/ui.py; src/template_editor/editor.js; tests/test_pedagogy.py; tests/test_template_browser.py. Resumo: Vincular introdução vazia e inserir legendas disponíveis, preservar conteúdo e avisar requisito repetido.
+- Verificação histórica: 50 testes aprovados e 1 ignorado registrados. PNG local inspecionado estaticamente; não equivale a revisão manual em navegador.
+- Versionamento: `745eb02`; commit confirmado localmente. As bases e árvores modificadas na ocasião são as registradas na seção legada; não confundir base com entrega.
+- Estado: IMPLEMENTADO; TESTADO segundo o relatório legado; VALIDADO MANUALMENTE em navegador: não comprovado; PENDENTE/BLOQUEADO: conforme limites históricos, sem nova validação nesta tarefa.
+
+<a id="retro-2026-008"></a>
+
+#### RETRO-2026-008 — Seleção e troca de projetos
+
+- Solicitação/objetivo e origem: [RETRO-2026-008 no histórico](HISTORICO_PROMPTS.md#retro-2026-008).
+- Evidência anterior: seção **Selecao de projeto e catalogo de textos no editor**, neste documento; 2026-11-20T18:47:52-03:00 (registro da validação).
+- Implementação/arquivos: src/pedagogy.py; src/template_editor/editor.js; src/template_editor/editor.css; src/template_editor/model.py; src/template_editor/ui.py; tests/test_pedagogy.py; tests/test_template_browser.py. Resumo: Catálogo por projeto agrupado, rótulos legíveis, aplicação da chamada e troca de vínculos equivalentes.
+- Verificação histórica: 51 testes aprovados e 1 ignorado registrados; Chromium aplicou chamada a subtítulo e trocou projetos. Revisão manual não executada.
+- Versionamento: `08210f9`; commit confirmado localmente. As bases e árvores modificadas na ocasião são as registradas na seção legada; não confundir base com entrega.
+- Estado: IMPLEMENTADO; TESTADO segundo o relatório legado; VALIDADO MANUALMENTE em navegador: não comprovado; PENDENTE/BLOQUEADO: conforme limites históricos, sem nova validação nesta tarefa.
+
+<a id="retro-2026-009"></a>
+
+#### RETRO-2026-009 — Consolidação no GitHub
+
+- Solicitação/objetivo e origem: [RETRO-2026-009 no histórico](HISTORICO_PROMPTS.md#retro-2026-009).
+- Evidência anterior: seção **Preparacao para versionamento no GitHub**, neste documento; 2026-11-20 (datas de commits; horário da solicitação não disponível).
+- Implementação/arquivos: Arquivos consolidados no commit e90aeee; conjunto exato verificável por git show --stat e90aeee.. Resumo: Salvar as entregas locais no repositório remoto preservando dados privados.
+- Verificação histórica: Registro local: 48 aprovados/1 ignorado antes do envio; saída de push disponível nesta conversa. Não houve nova consulta remota nesta tarefa.
+- Versionamento: `e90aeee`; consolidação conjunta, sem commit isolado desta subentrega. As bases e árvores modificadas na ocasião são as registradas na seção legada; não confundir base com entrega.
+- Estado: IMPLEMENTADO; TESTADO segundo o relatório legado; VALIDADO MANUALMENTE em navegador: não comprovado; PENDENTE/BLOQUEADO: conforme limites históricos, sem nova validação nesta tarefa.
+
+<a id="dev-2026-001"></a>
+
+### DEV-2026-001 — Protocolo permanente de rastreabilidade
+
+#### Identificação
+
+- Registro: 2026-11-21T10:17:03-03:00, America/Sao_Paulo. Data do pedido: 2026-11-21; horário de recebimento não verificável.
+- Histórico e prompt: [DEV-2026-001](HISTORICO_PROMPTS.md#dev-2026-001), anexo disponível e sanitizado.
+
+#### Solicitação do usuário
+
+- Objetivo: continuidade verificável entre prompts, requisitos, implementação, arquivos, testes, problemas, commits e pendências.
+- Requisitos: preservar todo o histórico, criar retrospectiva sem inventar prompts, atualizar instruções permanentes, proteger dados privados e não modificar funcionalidades.
+- Critérios de aceitação: IDs únicos, referências recíprocas e links locais válidos, nenhuma duplicação de relatórios completos, resultados separados por tipo de verificação e nenhum commit/push sem autorização.
+
+#### Implementação realizada
+
+- Criado: `docs/HISTORICO_PROMPTS.md` com a primeira solicitação formal, prompt integral sanitizado e nove registros retrospectivos.
+- Modificados: `AGENTS.md`, `README.md`, `.gitignore` e este `docs/VALIDACAO.md`.
+- Decisões: reservar IDs DEV e RETRO separados; aproveitar a documentação legada por referência; distinguir prompts indisponíveis e disponíveis no contexto; usar âncoras explícitas recíprocas. A única inclusão na lista permitida do Git é o novo Markdown público revisado.
+- Corrigida a regra antiga que impedia declarar conclusão local antes de commit: agora distingue conclusão local, commit e envio. A solicitação atual proíbe commit e push; nenhuma funcionalidade, teste da aplicação ou dado local de negócio foi alterado.
+- Instruções de AGENTS.md orientam o agente quando ele abre este repositório. Não existe captura de prompts em segundo plano nem acesso automático a outras conversas.
+
+#### Verificação
+
+- **APROVADO — inspeção inicial**: AGENTS.md, README, arquitetura, validação integral, Git recente, nomes dos testes, resumo persistente anterior e logs locais consultados. Diagnóstico executado com `.venv/Scripts/python.exe -m src.diagnostics`, em modo somente leitura do banco; resultado técnico permaneceu privado. Nenhum detalhe interno do SQLite é reproduzido neste novo registro.
+- **NÃO TESTADO nesta intervenção — suíte da aplicação**: alteração somente documental e de inclusão no Git; nenhuma mudança funcional. Último resumo disponível: 51 aprovados, 1 ignorado, exit 0, conclusão 2026-11-20T21:49:31.671737+00:00, base de teste `745eb02`. É evidência histórica da árvore então modificada, não teste novo do HEAD atual.
+- **NÃO TESTADO — HTTP e revisão manual em navegador**: não executados nesta intervenção. Revisão documental/inspeção estática não equivale a validação manual do produto.
+- Problemas identificados e tratados: histórico sem IDs; novo Markdown inicialmente excluído pela regra geral; instrução antiga incompatível com entrega local sem commit. Tratados por índice, exceção específica e ajuste de AGENTS.md. Pendências visuais anteriores continuam abertas; não foram corrigidas ou reclassificadas como aprovadas.
+- Verificação estrutural documental: resultados efetivamente executados serão acrescentados em adendo abaixo.
+
+#### Versionamento
+
+- Commit inicial/base: `08210f9438652a11acb0568016318063f3c4d1b1`; branch `main`; árvore inicialmente limpa.
+- Commit final: inexistente. Commit e envio não autorizados; nenhum stage, commit, fetch ou push nesta intervenção.
+- Novo arquivo não rastreado esperado: `docs/HISTORICO_PROMPTS.md`; os outros quatro arquivos listados acima permanecem modificados localmente. Scripts e relatórios de verificação somente em outputs, ignorados e não destinados ao versionamento.
+- Nenhuma alteração em código da aplicação, dependências, testes ou arquivos privados é incluída nesta entrega.
+
+#### Estado final
+
+- IMPLEMENTADO: sim, protocolo documental local; sem commit.
+- TESTADO: verificação estrutural documental em adendo; suíte da aplicação NÃO TESTADA nesta tarefa.
+- VALIDADO MANUALMENTE: revisão documental estática; navegador NÃO TESTADO.
+- PENDENTE: decisão do usuário sobre versionamento; revisão visual e limitações históricas do aplicativo não resolvidas nesta tarefa.
+- BLOQUEADO: não; ausência de autorização de commit é uma restrição de escopo respeitada.
+
+#### Adendo de verificação documental — 2026-11-21T10:17:33-03:00
+
+- **APROVADO — verificação automatizada documental**: `.venv/Scripts/python.exe outputs/check_trace_docs.py`; 10 IDs definidos uma vez por documento (1 formal e 9 retrospectivos), referências recíprocas e 39 links relativos válidos. Prompt formal conferido integralmente com o anexo após a substituição do caminho privado.
+- **APROVADO — preservação**: os 31608 bytes anteriores de VALIDACAO.md permanecem como prefixo idêntico; SHA-256 do prefixo `f80dee6b2593d17ea041dd9326825021821d5de38f3f14790649a53c3e1ed5f5`. Nenhuma seção histórica foi removida ou reescrita.
+- **APROVADO — revisão de privacidade e Git**: inspeção documental e checagem de padrões sem caminhos absolutos sensíveis, credenciais ou e-mails nos textos novos; sem reprodução de conteúdo pedagógico privado ou dados do SQLite. Arquivos privados continuam ignorados; nenhum arquivo preparado no index, HEAD inalterado e nenhuma mudança no código da aplicação. Checagem de padrões complementa a revisão, sem pretender detectar todo segredo possível.
+- **APROVADO — inspeção estática documental**: conferidas amostras do histórico, correspondência com commits locais, instruções permanentes e distinção entre teste antigo, teste atual e revisão de produto. Sem revisão manual em navegador.
+- Corrigida durante a revisão uma perda de acentuação na primeira escrita deste adendo pelo pipe PowerShell/Python; regravado em UTF-8 por patch, sem tocar o prefixo histórico. Checagem documental repetida após a correção.
+- Estado confirmado: IMPLEMENTADO localmente; TESTADO (documentação) APROVADO; VALIDADO MANUALMENTE no produto NÃO TESTADO; PENDENTE apenas versionamento por decisão do usuário e pendências históricas fora do escopo; BLOQUEADO não. A consulta diagnóstica gerou somente artefato local ignorado.
+
+<a id="dev-2026-002"></a>
+
+### DEV-2026-002 — Consolidação autorizada no GitHub
+
+- **Identificação:** registro 2026-11-21T10:20:33-03:00, America/Sao_Paulo; [prompt e autorização](HISTORICO_PROMPTS.md#dev-2026-002). Pedido: salvar a entrega documental anterior no GitHub para continuidade.
+- **Solicitação e critérios:** revisar documentação, preservar privacidade e histórico, executar checagem pertinente, criar commit e enviar à main do origin configurado. Nenhuma mudança funcional solicitada.
+- **Implementação:** consolidação de DEV-2026-001; criados HISTORICO_PROMPTS.md e vínculos correspondentes; modificados AGENTS.md, README.md, .gitignore e VALIDACAO.md. Nesta continuação, atualizado o próximo ID e esclarecida a autorização posterior, sem apagar a restrição inicial histórica.
+- **Verificação:** diagnóstico somente leitura reexecutado; resultado mantido localmente. Verificação estrutural documental cobre IDs e referências recíprocas, links, prompt sanitizado, privacidade, prefixo histórico e ausência de mudanças no código. O comando e resultado observado são registrados em adendo antes do commit. Suíte da aplicação, HTTP e revisão manual em navegador: **NÃO TESTADO** nesta intervenção documental.
+- **Problemas/correções:** restrição antiga de não versionar precisava ser situada na intervenção original; esclarecida em AGENTS.md e neste adendo. Nenhum dado privado será incluído no stage.
+- **Versionamento:** base `08210f9438652a11acb0568016318063f3c4d1b1`, branch main; árvore inicialmente modificada pela tarefa documental anterior. Commit de entrega identificável por `git log -1 --format=%H --grep=DEV-2026-002`; hash final a consultar após criação, evitando autorreferência. Novo arquivo antes do stage: docs/HISTORICO_PROMPTS.md; quatro outros arquivos modificados. Não se declara push concluído neste registro anterior à operação.
+- **Estado no registro:** IMPLEMENTADO localmente; TESTADO documentalmente conforme adendo; VALIDADO MANUALMENTE no navegador: NÃO TESTADO; PENDENTE de executar/verificar commit e envio; BLOQUEADO não. Pendências funcionais históricas permanecem fora do escopo. Autorização do usuário para commit e push disponível nesta solicitação.
+
+- **APROVADO — adendo de verificação, 2026-11-21T10:21:15-03:00:** `.venv/Scripts/python.exe outputs/check_trace_docs.py` retornou 0; 11 IDs, 42 links relativos, referências recíprocas, prompt sanitizado e prefixo histórico de 31608 bytes conferidos. Nenhuma mudança no código da aplicação e nenhum arquivo privado no conjunto da entrega. Somente os cinco arquivos documentais identificados serão preparados para commit.

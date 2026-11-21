@@ -78,6 +78,8 @@ Use o Python do ambiente virtual, se criado (`.\.venv\Scripts\python.exe -m src.
 
 `docs/VALIDACAO.md` mantém entradas históricas com comandos e resultados observados. **APROVADO** significa verificação realizada com sucesso; **REPROVADO**, falha observada; **NÃO TESTADO**, sem execução; **BLOQUEADO**, execução impedida. Consulte a entrada mais recente e suas pendências antes de mudar o código. Registros anteriores não são substituídos.
 
+O [histórico de prompts](docs/HISTORICO_PROMPTS.md) relaciona solicitações, critérios de aceitação, implementações e commits à [rastreabilidade das validações](docs/VALIDACAO.md#rastreabilidade-de-solicitações-e-implementações). O protocolo permanente está em [AGENTS.md](AGENTS.md). Prompts são registrados pelo agente a partir do contexto disponível, com sanitização de dados privados; conversas anteriores não são recuperadas automaticamente.
+
 Configuração por variáveis de ambiente, definida antes de iniciar o processo:
 
 ```powershell
